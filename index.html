@@ -3490,42 +3490,46 @@ renderPlanningMetrics(salesToDisplay, currentRole);
             }
         });
 
-      // --- (PERBAIKAN) Listener untuk Hapus/Batal Rencana (Tab 1) ---
-        // Kode ini sebelumnya hilang
-        planListContainer.addEventListener('click', async (e) => {
-            const deleteButton = e.target.closest('.delete-plan-btn');
-            if (deleteButton) {
-    const planId = deleteButton.dataset.planId;
+     planListContainer.addEventListener('click', async (e) => {
+    // Cari tombol delete
+    const deleteButton = e.target.closest('.delete-plan-btn');
 
-    try {
-        // 1. Kirim update status ke GAS
-        const result = await jsonpRequest(GOOGLE_SCRIPT_URL, {
-            action: 'updatePlanStatus',
-            id: planId, 
-            status: 'cancelled' 
-        });
+    if (deleteButton) {
+        // Ambil ID
+        const planId = deleteButton.dataset.planId;
 
-        if (result.status !== 'sukses') {
-            throw new Error(result.message);
+        // --- MULAI: EKSEKUSI LANGSUNG (TANPA KONFIRMASI) ---
+        try {
+            // 1. Kirim update status ke GAS
+            const result = await jsonpRequest(GOOGLE_SCRIPT_URL, {
+                action: 'updatePlanStatus',
+                id: planId,
+                status: 'cancelled' // Mengubah status menjadi 'cancelled'
+            });
+
+            if (result.status !== 'sukses') {
+                throw new Error(result.message);
+            }
+
+            // 2. Jika sukses, muat ulang data rencana
+            let params = { action: 'getPlans', role: currentRole, salesPerson: currentUser, _timestamp: new Date().getTime() };
+            allPlansFull = await jsonpRequest(GOOGLE_SCRIPT_URL, params);
+            allPlans = allPlansFull.filter(p => p.status === 'planned');
+
+            // 3. Render ulang UI (Tanpa panggilan metrik/dashboard yang error)
+            renderPlanList(); 
+            renderPlanSelector();
+            renderFollowUpLeadSelector();
+            populateClientDatalist();
+            
+            // (Notifikasi sukses dihilangkan sesuai permintaan sebelumnya)
+
+        } catch (error) {
+            // Penanganan Error (Tetap ditampilkan jika gagal membatalkan di server)
+            showCustomModal("Error", "Gagal membatalkan rencana: " + error.message);
         }
-        
-        // 2. Muat ulang data rencana
-        let params = { action: 'getPlans', role: currentRole, salesPerson: currentUser, _timestamp: new Date().getTime() };
-        allPlansFull = await jsonpRequest(GOOGLE_SCRIPT_URL, params);
-        allPlans = allPlansFull.filter(p => p.status === 'planned');
-        
-        // 3. Render ulang UI
-        renderPlanList();
-        
-        // Baris berikut dihilangkan:
-        // showCustomModal("Sukses", "Rencana berhasil DIBATALKAN."); 
-        // Aksi pembatalan selesai tanpa notifikasi pop-up.
-
-    } catch (error) {
-        // Penanganan Error (TETAP DIPERLUKAN jika pembatalan gagal)
-        showCustomModal("Error Pembatalan Rencana", "Gagal membatalkan: " + error.message);
+        // --- AKHIR: EKSEKUSI LANGSUNG ---
     }
-}
 });
         // --- (PERBAIKAN) LISTENER UNTUK SUBMIT REALISASI (TAB 2) YANG HILANG ---
         activityForm.addEventListener('submit', async (e) => {
