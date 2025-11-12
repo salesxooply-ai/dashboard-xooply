@@ -815,7 +815,6 @@
 	                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Sales</th>
 						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Segmen</th>
 						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Klien</th>
-						
 						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Project</th>
 						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status Terakhir</th>
 						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Estimasi Amount</th>
@@ -2704,7 +2703,6 @@ let dealsToProcess = allDeals;
 				        <td class="px-4 py-3 text-sm font-medium text-white">${lead.sales}</td>
 						<td class="px-4 py-3 text-sm text-gray-300">${lead.clientSegment}</td> 
 				        <td class="px-4 py-3 text-sm text-gray-300">${lead.client}</td> 
-				        
 				        <td class="px-4 py-3 text-sm text-gray-300">${lead.namaProject || 'N/A'}</td> 
 				        <td class="px-4 py-3 text-sm text-gray-300"> <span class="status-label status-${lead.status.replace(/\s/g, '')}">${lead.status}</span> </td> 
 				        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300">${formatIDR(lead.value)}</td> 
