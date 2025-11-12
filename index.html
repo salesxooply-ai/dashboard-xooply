@@ -2697,18 +2697,21 @@ let dealsToProcess = allDeals;
         // 5. Render ke tabel
         if (paginatedLeads.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Tidak ada leads untuk status ini.</td></tr>`;
-        } else { 
-				    tableBody.innerHTML = paginatedLeads.map(lead => ` 
-				    <tr> 
-				        <td class="px-4 py-3 text-sm font-medium text-white">${lead.sales}</td>
-						<td class="px-4 py-3 text-sm text-gray-300">${lead.clientSegment}</td> 
-				        <td class="px-4 py-3 text-sm text-gray-300">${lead.client}</td> 
-				        <td class="px-4 py-3 text-sm text-gray-300">${lead.namaProject || 'N/A'}</td> 
-				        <td class="px-4 py-3 text-sm text-gray-300"> <span class="status-label status-${lead.status.replace(/\s/g, '')}">${lead.status}</span> </td> 
-				        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300">${formatIDR(lead.value)}</td> 
-				    </tr> 
-				    `).join('');
-				}
+       } else {
+            tableBody.innerHTML = paginatedLeads.map(lead => `
+                <tr>
+                    <td class="px-4 py-3 text-sm font-medium text-white">${lead.sales}</td>
+					<td class="px-4 py-3 text-sm text-gray-300">${lead.clientSegment || 'N/A'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-300">${lead.client}</td>
+                    <td class="px-4 py-3 text-sm text-gray-300">${lead.namaProject || 'N/A'}</td>
+                    <td class="px-4 py-3 text-sm text-gray-300">
+                        <span class="status-label status-${lead.meetingType.replace(/\s/g, '')}">${lead.meetingType}</span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-white">${formatIDR(lead.value)}</td>
+                </tr>
+            `).join('');
+        }
+
 
         // 6. (BARU) Render Paginasi
         let paginationHTML = '';
