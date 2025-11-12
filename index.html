@@ -778,6 +778,27 @@
 <div id="manager-tab-panel-3" class="manager-tab-panel hidden space-y-6">
     <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
         
+        <h2 id="activeLeadsTableTitle" ...>...</h2>
+        
+        </div>
+</div> <div id="manager-tab-panel-4" class="manager-tab-panel hidden space-y-6">
+    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+        <h2 class="text-xl font-semibold text-white mb-4">
+            Dashboard Performa Looker Studio
+        </h2>
+
+        <iframe 
+            width="100%" 
+            height="700" 
+            src="https://lookerstudio.google.com/embed/reporting/233db3d6-2ba2-4535-9650-febb4ef65735/page/0F8IF" 
+            frameborder="0" 
+            style="border:0" 
+            allowfullscreen 
+            sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
+        </iframe>
+    </div>
+</div>
+        
         <div class="mb-6 border-b border-gray-700">
             <nav id="leadsStatusTabsContainer" class="flex space-x-4" aria-label="Tabs">
                 <button data-status="Awareness" class="leads-status-tab tab-button active-tab whitespace-nowrap py-3 px-2 text-sm font-medium">
@@ -794,30 +815,19 @@
                 </button>
             </nav>
         </div>
-<div id="manager-tab-panel-4" class="manager-tab-panel hidden space-y-6">
-    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-        <h2 class="text-xl font-semibold text-white mb-4">
-            Dashboard Performa Looker Studio
-        </h2>
 
-        <iframe width="600" height="443" src="https://lookerstudio.google.com/embed/reporting/233db3d6-2ba2-4535-9650-febb4ef65735/page/0F8IF" 
-			frameborder="0" 
-			style="border:0" 
-			allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-    </div>
-</div>
         <h2 id="activeLeadsTableTitle" class="text-xl font-semibold text-white mb-4">Daftar Leads: Awareness</h2>
         
         <div class="min-w-full">
             <table class="min-w-full divide-y divide-gray-700">
                 <thead>
                     <tr>
-	                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Sales</th>
-						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Segmen</th>
-						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Klien</th>
-						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Project</th>
-						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status Terakhir</th>
-						<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Estimasi Amount</th>
+                        <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Sales</th>
+                        <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Klien</th>
+                        <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Segmen</th>
+                        <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nama Project</th>
+                        <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status Terakhir</th>
+                        <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Estimasi Amount</th>
                     </tr>
                 </thead>
                 <tbody id="activeLeadsTableBody" class="divide-y divide-gray-700">
@@ -1111,8 +1121,11 @@ function setupManagerTabListeners() {
                 }
             });
 
-            // PENTING: Render ulang dashboard untuk menggambar chart di panel yang baru aktif
-            renderFilteredDashboard(); 
+           // (PERBAIKAN) Hanya render ulang jika tab BUKAN Looker
+            if (tabId !== '4') {
+                // PENTING: Render ulang dashboard untuk menggambar chart di panel yang baru aktif
+                renderFilteredDashboard(); 
+            }
 
             // Refresh ikon lucide
             lucide.createIcons();
@@ -2697,21 +2710,20 @@ let dealsToProcess = allDeals;
         // 5. Render ke tabel
         if (paginatedLeads.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Tidak ada leads untuk status ini.</td></tr>`;
-       } else {
+        } else {
             tableBody.innerHTML = paginatedLeads.map(lead => `
                 <tr>
-                    <td class="px-4 py-3 text-sm font-medium text-white">${lead.sales}</td>
-					<td class="px-4 py-3 text-sm text-gray-300">${lead.clientSegment || 'N/A'}</td>
-                    <td class="px-4 py-3 text-sm text-gray-300">${lead.client}</td>
-                    <td class="px-4 py-3 text-sm text-gray-300">${lead.namaProject || 'N/A'}</td>
-                    <td class="px-4 py-3 text-sm text-gray-300">
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-300">${lead.sales}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-white">${lead.client}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300">${lead.clientSegment || 'N/A'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300">${lead.namaProject || 'N/A'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
                         <span class="status-label status-${lead.meetingType.replace(/\s/g, '')}">${lead.meetingType}</span>
                     </td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-white">${formatIDR(lead.value)}</td>
                 </tr>
             `).join('');
         }
-
 
         // 6. (BARU) Render Paginasi
         let paginationHTML = '';
@@ -3486,48 +3498,62 @@ renderPlanningMetrics(salesToDisplay, currentRole);
             }
         });
 
-		// --- (PERBAIKAN) Listener untuk Hapus/Batal Rencana (Tab 1) ---
-     planListContainer.addEventListener('click', async (e) => {
-    // Cari tombol delete
-    const deleteButton = e.target.closest('.delete-plan-btn');
+        // --- (PERBAIKAN FINAL) Listener untuk Hapus/Batal Rencana (Tab 1) ---
+        planListContainer.addEventListener('click', async (e) => {
+            const deleteButton = e.target.closest('.delete-plan-btn');
+            if (deleteButton) {
+                // Ambil ID dari GSheet (sekarang plan_id)
+                const planId = deleteButton.dataset.planId; 
+                
+                // Menggunakan Modal Konfirmasi Kustom
+                showCustomConfirmModal("Konfirmasi Hapus", "Anda yakin ingin MEMBATALKAN rencana ini? (Status akan diubah menjadi 'cancelled')", async () => {
+                    // Ini adalah callback 'onConfirm'
+                    try {
+                        // Kirim update status ke GAS
+                        const result = await jsonpRequest(GOOGLE_SCRIPT_URL, {
+                            action: 'updatePlanStatus',
+                            id: planId, // GScript mencari 'id'
+                            status: 'cancelled' // GScript mencari 'status'
+                        });
 
-    if (deleteButton) {
-        // Ambil ID
-        const planId = deleteButton.dataset.planId;
+                        if (result.status !== 'sukses') {
+                            throw new Error(result.message);
+                        }
 
-        // --- MULAI: EKSEKUSI LANGSUNG (TANPA KONFIRMASI) ---
-        try {
-            // 1. Kirim update status ke GAS
-            const result = await jsonpRequest(GOOGLE_SCRIPT_URL, {
-                action: 'updatePlanStatus',
-                id: planId,
-                status: 'cancelled' // Mengubah status menjadi 'cancelled'
-            });
+                        // Jika sukses, muat ulang data rencana
+                        let params = { 
+                            action: 'getPlans',
+                            role: currentRole, 
+                            salesPerson: currentUser,
+                            // (BARU) Cache-buster untuk memaksa data baru
+                            _timestamp: new Date().getTime()
+                        };
+                        allPlansFull = await jsonpRequest(GOOGLE_SCRIPT_URL, params);
+                        allPlans = allPlansFull.filter(p => p.status === 'planned');
 
-            if (result.status !== 'sukses') {
-                throw new Error(result.message);
+                       // Render ulang UI (CARA YANG BENAR)
+                        renderPlanList();
+                        renderPlanSelector();
+                        renderFollowUpLeadSelector();
+                        populateClientDatalist();
+
+                        // (MODIFIKASI) Panggil HANYA renderPlanningMetrics
+                        // Ini akan me-refresh kartu metrik di Tab 1 tanpa beralih tab.
+                        let salesToDisplay = [currentUser];
+                        
+                        // Panggil fungsi spesifik untuk metrik Tab 1
+                        renderPlanningMetrics(salesToDisplay, currentRole);
+                        
+                        // --- PANGGILAN renderCalendar() SUDAH DIHAPUS DARI SINI ---
+                        
+                        showCustomModal("Sukses", "Rencana telah dibatalkan."); // Modal notifikasi standar
+
+                    } catch (error) {
+                        showCustomModal("Error", "Gagal membatalkan rencana: " + error.message);
+                    }
+                });
             }
-
-            // 2. Jika sukses, muat ulang data rencana
-            let params = { action: 'getPlans', role: currentRole, salesPerson: currentUser, _timestamp: new Date().getTime() };
-            allPlansFull = await jsonpRequest(GOOGLE_SCRIPT_URL, params);
-            allPlans = allPlansFull.filter(p => p.status === 'planned');
-
-            // 3. Render ulang UI (Tanpa panggilan metrik/dashboard yang error)
-            renderPlanList(); 
-            renderPlanSelector();
-            renderFollowUpLeadSelector();
-            populateClientDatalist();
-            
-            // (Notifikasi sukses dihilangkan sesuai permintaan sebelumnya)
-
-        } catch (error) {
-            // Penanganan Error (Tetap ditampilkan jika gagal membatalkan di server)
-            showCustomModal("Error", "Gagal membatalkan rencana: " + error.message);
-        }
-        // --- AKHIR: EKSEKUSI LANGSUNG ---
-    }
-});
+        });
         // --- (PERBAIKAN) LISTENER UNTUK SUBMIT REALISASI (TAB 2) YANG HILANG ---
         activityForm.addEventListener('submit', async (e) => {
             e.preventDefault();
