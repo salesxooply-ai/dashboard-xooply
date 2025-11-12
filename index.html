@@ -2714,8 +2714,8 @@ let dealsToProcess = allDeals;
             tableBody.innerHTML = paginatedLeads.map(lead => `
                 <tr>
                     <td class="px-4 py-3 text-sm font-medium text-white">${lead.sales}</td>
+					<td class="px-4 py-3 text-sm text-gray-300">${lead.clientSegment || 'N/A'}</td>
                     <td class="px-4 py-3 text-sm text-gray-300">${lead.client}</td>
-                    <td class="px-4 py-3 text-sm text-gray-300">${lead.clientSegment || 'N/A'}</td>
                     <td class="px-4 py-3 text-sm text-gray-300">${lead.namaProject || 'N/A'}</td>
                     <td class="px-4 py-3 text-sm text-gray-300">
                         <span class="status-label status-${lead.meetingType.replace(/\s/g, '')}">${lead.meetingType}</span>
