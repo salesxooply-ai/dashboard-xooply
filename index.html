@@ -3490,62 +3490,43 @@ renderPlanningMetrics(salesToDisplay, currentRole);
             }
         });
 
-        // --- (PERBAIKAN FINAL) Listener untuk Hapus/Batal Rencana (Tab 1) ---
+       // --- (PERBAIKAN) Listener untuk Hapus/Batal Rencana (Tab 1) ---
+        // Kode ini sebelumnya hilang
         planListContainer.addEventListener('click', async (e) => {
             const deleteButton = e.target.closest('.delete-plan-btn');
             if (deleteButton) {
-                // Ambil ID dari GSheet (sekarang plan_id)
-                const planId = deleteButton.dataset.planId; 
-                
-                // Menggunakan Modal Konfirmasi Kustom
-                showCustomConfirmModal("Konfirmasi Hapus", "Anda yakin ingin MEMBATALKAN rencana ini? (Status akan diubah menjadi 'cancelled')", async () => {
-                    // Ini adalah callback 'onConfirm'
-                    try {
-                        // Kirim update status ke GAS
-                        const result = await jsonpRequest(GOOGLE_SCRIPT_URL, {
-                            action: 'updatePlanStatus',
-                            id: planId, // GScript mencari 'id'
-                            status: 'cancelled' // GScript mencari 'status'
-                        });
+    const planId = deleteButton.dataset.planId;
 
-                        if (result.status !== 'sukses') {
-                            throw new Error(result.message);
-                        }
-
-                        // Jika sukses, muat ulang data rencana
-                        let params = { 
-                            action: 'getPlans',
-                            role: currentRole, 
-                            salesPerson: currentUser,
-                            // (BARU) Cache-buster untuk memaksa data baru
-                            _timestamp: new Date().getTime()
-                        };
-                        allPlansFull = await jsonpRequest(GOOGLE_SCRIPT_URL, params);
-                        allPlans = allPlansFull.filter(p => p.status === 'planned');
-
-                       // Render ulang UI (CARA YANG BENAR)
-                        renderPlanList();
-                        renderPlanSelector();
-                        renderFollowUpLeadSelector();
-                        populateClientDatalist();
-
-                        // (MODIFIKASI) Panggil HANYA renderPlanningMetrics
-                        // Ini akan me-refresh kartu metrik di Tab 1 tanpa beralih tab.
-                        let salesToDisplay = [currentUser];
-                        
-                        // Panggil fungsi spesifik untuk metrik Tab 1
-                        renderPlanningMetrics(salesToDisplay, currentRole);
-                        
-                        // --- PANGGILAN renderCalendar() SUDAH DIHAPUS DARI SINI ---
-                        
-                        showCustomModal("Sukses", "Rencana telah dibatalkan."); // Modal notifikasi standar
-
-                    } catch (error) {
-                        showCustomModal("Error", "Gagal membatalkan rencana: " + error.message);
-                    }
-                });
-            }
+    try {
+        // 1. Kirim update status ke GAS
+        const result = await jsonpRequest(GOOGLE_SCRIPT_URL, {
+            action: 'updatePlanStatus',
+            id: planId, 
+            status: 'cancelled' 
         });
+
+        if (result.status !== 'sukses') {
+            throw new Error(result.message);
+        }
+        
+        // 2. Muat ulang data rencana
+        let params = { action: 'getPlans', role: currentRole, salesPerson: currentUser, _timestamp: new Date().getTime() };
+        allPlansFull = await jsonpRequest(GOOGLE_SCRIPT_URL, params);
+        allPlans = allPlansFull.filter(p => p.status === 'planned');
+        
+        // 3. Render ulang UI
+        renderPlanList();
+        
+        // Baris berikut dihilangkan:
+        // showCustomModal("Sukses", "Rencana berhasil DIBATALKAN."); 
+        // Aksi pembatalan selesai tanpa notifikasi pop-up.
+
+    } catch (error) {
+        // Penanganan Error (TETAP DIPERLUKAN jika pembatalan gagal)
+        showCustomModal("Error Pembatalan Rencana", "Gagal membatalkan: " + error.message);
+    }
+}
+});
         // --- (PERBAIKAN) LISTENER UNTUK SUBMIT REALISASI (TAB 2) YANG HILANG ---
         activityForm.addEventListener('submit', async (e) => {
             e.preventDefault();
