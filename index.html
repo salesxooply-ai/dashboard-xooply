@@ -221,6 +221,27 @@
             white-space: nowrap; 
         }
 
+.tab-count-active {
+            display: inline-block;
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: white;
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 9999px; /* rounded-full */
+            margin-left: 4px;
+        }
+        .tab-count-zero {
+            display: inline-block;
+            background-color: #4b5563; /* bg-gray-600 */
+            color: #d1d5db; /* text-gray-300 */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 9999px; /* rounded-full */
+            margin-left: 4px;
+        }
+
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen p-4 sm:p-8">
@@ -602,7 +623,7 @@
 
                         <div id="metricsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div class="bg-gray-800 p-5 rounded-xl shadow-lg border border-gray-700">
-                                <p class="text-sm font-medium text-gray-400 flex items-center">Total Meeting <i data-lucide="calendar" class="w-4 h-4 ml-1 text-blue-400"></i></p>
+                                <p class="text-sm font-medium text-gray-400 flex items-center">Total Aktivitas Realisasi <i data-lucide="calendar" class="w-4 h-4 ml-1 text-blue-400"></i></p>
                                 <p id="metricTotalMeetings" class="text-3xl font-bold text-white mt-1">0</p>
                             </div>
                             <div class="bg-gray-800 p-5 rounded-xl shadow-lg border border-gray-700">
@@ -634,8 +655,6 @@
                                     </div>
                                     <div id="aidaLegend" class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm"></div>
                                 </div>
-								</div>
-								
                                 
                                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                                     <h2 class="text-xl font-semibold text-white mb-4 flex items-center">Distribusi Segmen Klien</h2>
@@ -668,7 +687,7 @@
                                         <p class="text-xs text-gray-500 mt-1">Indikator Engagement</p>
                                     </div>
                                 </div>
-				<div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
+<div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
                 <h2 class="text-xl font-semibold text-white mb-4">Lead ID Tanpa Follow-Up ( > 7 Hari)</h2>
                 <div class="min-w-full">
                     <table class="min-w-full divide-y divide-gray-700">
@@ -688,7 +707,7 @@
                 </div>
             </div>
 
-                         
+                            </div>
 				
           
                             <div class="lg:w-1/3 space-y-6">
@@ -711,12 +730,11 @@
                                         <canvas id="winRateChart"></canvas> 
                                     </div>
                                 </div>
-								</div>
+                            </div>
                             
-                            
+                        </div>
                         
-                        
-    
+                    </div>
                     
                     <div id="manager-tab-panel-2" class="manager-tab-panel hidden space-y-6">
                         
@@ -779,8 +797,7 @@
 
                 </div>
 
-</div>
-					<div id="manager-tab-panel-4" class="manager-tab-panel hidden space-y-6">
+</div> <div id="manager-tab-panel-4" class="manager-tab-panel hidden space-y-6">
     <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
         <h2 class="text-xl font-semibold text-white mb-4">
             Dashboard Performa Looker Studio
@@ -797,7 +814,10 @@
         </iframe>
     </div>
 </div>
-        
+
+        <div id="manager-tab-panel-3" class="manager-tab-panel hidden space-y-6">
+    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
+
         <div class="mb-6 border-b border-gray-700">
             <nav id="leadsStatusTabsContainer" class="flex space-x-4" aria-label="Tabs">
                 <button data-status="Awareness" class="leads-status-tab tab-button active-tab whitespace-nowrap py-3 px-2 text-sm font-medium">
@@ -836,7 +856,7 @@
 
         <div id="activeLeadsPaginationContainer" class="flex justify-between items-center mt-4">
             </div>
-
+</div> </div> </div>
     </div>
 </div>
 
@@ -1277,6 +1297,30 @@ function populateClientDatalist() {
             minimumFractionDigits: 0
         }).format(number);
     };
+
+// (BARU) Format mata uang singkat (Jt, M, T)
+const formatIDRShort = (number) => {
+    if (number === null || number === undefined || isNaN(number) || number === 0) return 'Rp 0';
+
+    const num = Math.abs(Number(number));
+    const tiers = [
+        { value: 1e12, symbol: 'T' }, // Triliun
+        { value: 1e9,  symbol: 'M' }, // Miliar
+        { value: 1e6,  symbol: 'Jt' }, // Juta
+        { value: 1e3,  symbol: 'Rb' }  // Ribu
+    ];
+
+    // Cari tier yang sesuai
+    const tier = tiers.find(t => num >= t.value);
+
+    if (tier) {
+        // Format angka, hapus .0 jika tidak perlu (misal 1.5 Jt, bukan 1.0 Jt)
+        const formattedNum = (num / tier.value).toFixed(1).replace(/\.0$/, '');
+        return `Rp ${formattedNum} ${tier.symbol}`;
+    }
+
+    return 'Rp ' + num.toLocaleString('id-ID'); // Fallback untuk angka < 1000
+};
 
     // Format tanggal ke YYYY-MM-DD
     const formatDate = (dateString) => {
@@ -2675,6 +2719,56 @@ let dealsToProcess = allDeals;
                 const statusMatch = deal.meetingType !== closedStatus;
                 return salesMatch && statusMatch;
             });
+// --- (MODIFIKASI) Hitung total AMOUNT untuk setiap tab ---
+    const statusAmounts = {
+        Awareness: 0,
+        Interest: 0,
+        Desire: 0, // Ini akan mencakup Desire + ProcessClosing
+        Action: 0  // Ini akan mencakup Action + Delivery + Payment
+    };
+
+    // Hitung total amount dari SEMUA leads aktif (sebelum difilter per tab)
+    activeLeads.forEach(lead => {
+        const status = lead.meetingType;
+        const value = lead.value || 0; // Pastikan value adalah angka
+
+        if (status === 'Awareness') {
+            statusAmounts.Awareness += value;
+        } else if (status === 'Interest') {
+            statusAmounts.Interest += value;
+        } else if (status === 'Desire' || status === 'ProcessClosing') {
+            statusAmounts.Desire += value;
+        } else if (status === 'Action' || status === 'Delivery' || status === 'Payment') {
+            statusAmounts.Action += value;
+        }
+    });
+
+    // --- (BARU) Update UI Tab dengan total ---
+    const tabButtons = document.querySelectorAll('#leadsStatusTabsContainer .leads-status-tab');
+tabButtons.forEach(button => {
+    const status = button.dataset.status;
+    let amount = 0;
+    let baseText = '';
+
+    if (status === 'Awareness') {
+        amount = statusAmounts.Awareness;
+        baseText = 'Awareness';
+    } else if (status === 'Interest') {
+        amount = statusAmounts.Interest;
+        baseText = 'Interest';
+    } else if (status === 'Desire') {
+        amount = statusAmounts.Desire;
+        baseText = 'Desire/Process';
+    } else if (status === 'Action') {
+        amount = statusAmounts.Action;
+        baseText = 'Action/Delivery/Payment';
+    }
+
+    // Terapkan style badge yang berbeda jika angkanya 0
+    const amountClass = amount > 0 ? 'tab-count-active' : 'tab-count-zero';
+    // Gunakan formatIDRShort yang baru kita buat
+    button.innerHTML = `${baseText} <span class="${amountClass}">${formatIDRShort(amount)}</span>`;
+});
 
         // 3. (BARU) Filter berdasarkan Sub-Tab Status yang aktif
         const filteredByStatusLeads = activeLeads.filter(lead => {
@@ -2860,19 +2954,42 @@ const plansOnThisDay = allPlans.filter(plan => {
         // --- Kartu 1: Total Aktivitas Terjadwal (dari data Rencana) ---
         // (BARU) Filter data rencana berdasarkan sales person yang sedang dilihat
 // (Gunakan array 'salesToDisplay' yang baru saja kita kirim)
-const relevantPlans = allPlansFull.filter(p => salesToDisplay.includes(p.salesPerson));
+// Ambil filter tanggal saat ini
+    const { startDate, endDate } = getFilterDates();
 
-// (MODIFIKASI) Gunakan 'relevantPlans' alih-alih 'allPlansFull'
-const plansSelesai = relevantPlans.filter(p => p.status === 'realized').length;
-const plansMenunggu = relevantPlans.filter(p => p.status === 'planned').length;
-        const plansTotal = plansSelesai + plansMenunggu;
-        
-        document.getElementById(idPrefix + 'metricRencanaTotal').textContent = plansTotal;
-        document.getElementById(idPrefix + 'metricRencanaSelesai').textContent = plansSelesai;
-        document.getElementById(idPrefix + 'metricRencanaMenunggu').textContent = plansMenunggu;
-        
+    // 1. Hitung "Selesai" berdasarkan 'filteredDeals' (yang SUDAH difilter tanggal)
+    // Ini akan MATCH dengan KPI "Total Meeting"
+    const plansSelesai = filteredDeals.length;
+
+    // 2. Hitung "Menunggu" berdasarkan 'allPlans' (status 'planned') DAN filter tanggal
+    // Kita filter berdasarkan 'plan_date'
+    let plansMenunggu = 0;
+    if (startDate && endDate) {
+        // Filter 'allPlans' (yang hanya berisi status 'planned')
+        plansMenunggu = allPlans.filter(p => {
+            // Pastikan sales-nya sesuai
+            if (!salesToDisplay.includes(p.salesPerson)) return false;
+
+            // Cek apakah tanggal rencana masuk dalam filter
+            try {
+                const planDate = new Date(p.plan_date);
+                planDate.setHours(12, 0, 0, 0); // Normalisasi
+                return planDate >= startDate && planDate <= endDate;
+            } catch (e) {
+                return false;
+            }
+        }).length;
+    } else {
+        // Fallback jika tidak ada filter tanggal (seharusnya tidak terjadi)
+        plansMenunggu = allPlans.filter(p => salesToDisplay.includes(p.salesPerson)).length;
+    }
+
+    const plansTotal = plansSelesai + plansMenunggu;
+
+    document.getElementById(idPrefix + 'metricRencanaTotal').textContent = plansTotal;
+    document.getElementById(idPrefix + 'metricRencanaSelesai').textContent = plansSelesai;
+    document.getElementById(idPrefix + 'metricRencanaMenunggu').textContent = plansMenunggu;        
         // --- Kartu 2: Rata-rata Realisasi Harian (dari data Realisasi/filteredDeals) ---
-        const { startDate, endDate } = getFilterDates();
         const avgRealisasiEl = document.getElementById(idPrefix + 'metricAvgRealisasi');
         const selisihWrapperEl = document.getElementById('metricSelisihWrapper'); // ID ini tidak duplikat, biarkan
         const selisihHarianEl = document.getElementById(idPrefix + 'metricSelisihHarian');
@@ -3016,37 +3133,38 @@ if (!currentMonthYearEl || currentMonthYearEl.offsetParent === null) return;
         // (MODIFIKASI) Tambahkan 'salesMatch'
         return salesMatch && planDateNormalized && planDateNormalized.getTime() === currentDate.getTime();
      });
-                    // --- AKHIR LOGIKA BARU ---
+                    // --- PERBAIKAN LOGIKA MAX 5 KEGIATAN ---
+let eventsHTML = '';
+const maxEventsToShow = 5; // <-- BATAS BARU ANDA
+let itemsShownCount = 0;
+const totalItems = plansOnThisDay.length + dealsOnThisDay.length;
 
-                    let eventsHTML = '';
-                    const maxEventsToShow = 2;
-                    
-                    // Render Rencana Dulu (Style Outline)
-                    plansOnThisDay.forEach(plan => {
-                        eventsHTML += renderPlannedEvent(plan);
-                    });
-                    
-                    // Render Realisasi (Style Solid)
-                    const dealsToShow = dealsOnThisDay.slice(0, maxEventsToShow - plansOnThisDay.length);
-                    eventsHTML += dealsToShow.map(deal => renderRealizedEvent(deal)).join('');
-                    
-                    // Hitung tombol "Lainnya"
-                    const totalItems = dealsOnThisDay.length + plansOnThisDay.length;
-                    const itemsShown = dealsToShow.length + plansOnThisDay.length;
-                    
-                    // Tombol 'lainnya' hanya memicu modal Realisasi (deals)
-                    if (dealsOnThisDay.length > dealsToShow.length || (dealsOnThisDay.length > 0 && plansOnThisDay.length > 0 && totalItems > maxEventsToShow)) {
-                         const remainingCount = dealsOnThisDay.length - dealsToShow.length;
-                         const planCount = plansOnThisDay.length;
-                         let remainingText = `+${remainingCount} realisasi`;
-                         if (remainingCount === 0 && planCount > 0) {
-                             remainingText = `+${planCount} rencana`;
-                         } else if (remainingCount > 0 && planCount > 0) {
-                             remainingText = `+${remainingCount} realisasi, ${planCount} rencana`;
-                         }
-                         
-                         eventsHTML += `<div class="calendar-others" onclick="window.showCalendarModal('${dateString}')" title="Lihat detail">${remainingText}</div>`;
-                    }
+// 1. Render Rencana (Planned) terlebih dahulu, sampai batas
+for (const plan of plansOnThisDay) {
+    if (itemsShownCount < maxEventsToShow) {
+        eventsHTML += renderPlannedEvent(plan);
+        itemsShownCount++;
+    } else {
+        break; // Stop jika sudah mencapai batas
+    }
+}
+
+// 2. Render Realisasi (Deals) untuk sisa slot yang ada
+for (const deal of dealsOnThisDay) {
+    if (itemsShownCount < maxEventsToShow) {
+        eventsHTML += renderRealizedEvent(deal);
+        itemsShownCount++;
+    } else {
+        break; // Stop jika sudah mencapai batas
+    }
+}
+
+// 3. Tampilkan tombol "Lainnya" jika total item melebihi yang ditampilkan
+if (totalItems > itemsShownCount) {
+    const remainingCount = totalItems - itemsShownCount;
+    eventsHTML += `<div class="calendar-others" onclick="window.showCalendarModal('${dateString}')" title="Lihat detail">+ ${remainingCount} lainnya...</div>`;
+}
+// --- AKHIR PERBAIKAN ---
 
 
                     calendarHTML += `
